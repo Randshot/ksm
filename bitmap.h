@@ -34,32 +34,24 @@
 #endif
 
 #define BITMAP_BITS			(sizeof(unsigned long) * CHAR_BIT)
+#define BIT_MASK(nr) 			(1UL << ((nr - 1) % BITMAP_BITS))
+#define BIT_WORD(nr) 			((nr) / BITMAP_BITS)
 #define DECLARE_BITMAP(name, bits)	\
 	unsigned long name[DIV_ROUND_UP(bits, BITMAP_BITS)]
 
-static inline unsigned long pos_bit(unsigned long pos)
+static inline void set_bit(unsigned long nr, unsigned long *bmp)
 {
-	return 1 << (pos % BITMAP_BITS);
+	bmp[BIT_WORD(nr)] |= BIT_MASK(nr);
 }
 
-static inline unsigned long bit_at(unsigned long pos)
+static inline void clear_bit(unsigned long nr, unsigned long *bmp)
 {
-	return pos / BITMAP_BITS;
+	bmp[BIT_WORD(nr)] &= ~BIT_MASK(nr);
 }
 
-static inline void set_bit(unsigned long pos, unsigned long *bmp)
+static inline bool test_bit(unsigned long nr, volatile const unsigned long *bmp)
 {
-	bmp[bit_at(pos)] |= pos_bit(pos);
-}
-
-static inline void clear_bit(unsigned long pos, unsigned long *bmp)
-{
-	bmp[bit_at(pos)] &= ~pos_bit(pos);
-}
-
-static inline bool test_bit(unsigned long pos, volatile const unsigned long *bmp)
-{
-	return !!(bmp[bit_at(pos)] & pos_bit(pos));
+	return !!(bmp[BIT_WORD(nr)] & BIT_MASK(nr));
 }
 
 static inline unsigned long count_bits(unsigned long count)
