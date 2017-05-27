@@ -148,9 +148,11 @@ int __ksm_init_cpu(struct ksm *k)
 
 	vcpu->subverted = true;
 	k->active_vcpus++;
+
 	return 0;
 
 out:
+	KSM_PANIC(ret, 0, 0, 0xCCCC);
 	vcpu_free(vcpu);
 	__writecr4(__readcr4() & ~X86_CR4_VMXE);
 	return ret;

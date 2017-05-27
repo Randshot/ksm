@@ -35,7 +35,8 @@
 
 #define BITMAP_BITS			(sizeof(unsigned long) * CHAR_BIT)
 #define BIT_MASK(nr) 			(1UL << ((nr - 1) % BITMAP_BITS))
-#define BIT_WORD(nr) 			(((nr) - 1) / BITMAP_BITS)
+//#define BIT_WORD(nr) 			(((nr) - 1) / BITMAP_BITS)
+#define BIT_WORD(nr) 			((nr) / BITMAP_BITS)
 #define DECLARE_BITMAP(name, bits)	\
 	unsigned long name[DIV_ROUND_UP(bits, BITMAP_BITS)]
 
@@ -106,7 +107,7 @@ static inline unsigned long find_first_zero_bit(unsigned long *bmp, unsigned lon
 {
 	unsigned long i;
 
-	for (i = 0; i *  BITMAP_BITS < size; ++i)
+	for (i = 0; i * BITMAP_BITS < size; ++i)
 		if (bmp[i] != ~0UL)
 			return min(i * BITMAP_BITS + __ffz(bmp[i]), size);
 

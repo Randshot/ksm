@@ -276,12 +276,24 @@ static inline bool init_ept(struct ept *ept)
 	int i;
 	u16 dontcare;
 
+	//for_each_eptp(ept, i) {
 	for (i = 0; i < EPTP_INIT_USED; ++i) {
+		KSM_DEBUG("%s: in for: %d\n", proc_name(), i);
+
 		if (!ept_create_ptr(ept, EPT_ACCESS_ALL, &dontcare)) {
+			KSM_DEBUG("%s: failed create: %d\n", proc_name(), i);
 			free_pml4_list(ept);
 			return false;
 		}
 	}
+	//}
+
+	//for (i = 0; i < EPTP_INIT_USED; ++i) {
+	//	if (!ept_create_ptr(ept, EPT_ACCESS_ALL, &dontcare)) {
+	//		free_pml4_list(ept);
+	//		return false;
+	//	}
+	//}
 
 	return true;
 }
@@ -830,6 +842,7 @@ void vcpu_run(struct vcpu *vcpu, uintptr_t gsp, uintptr_t gip)
 
 		/* If all good, this goes to do_resume (initial guest entry) label in assembly.  */
 		err = __vmx_vmlaunch();
+		KSM_PANIC(err, 0, 0, 0xCC);
 	}
 
 	/*

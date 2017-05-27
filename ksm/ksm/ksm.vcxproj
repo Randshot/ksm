@@ -61,15 +61,17 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy /y "$(OutDir)ksm.sys" "C:\ksm\ksm.sys"
+copy /y "$(OutDir)ksm.sys" "C:\symbols\ksm.sys\59261F8E15000\ksm.sys"
+copy /y "$(OutDir)ksm.pdb" "C:\symbols\ksm.pdb\3D8B0C888BBC4061BAADF3B6D68EFF8B8\ksm.pdb"
+copy /y "$(OutDir)ksm_um.exe" "C:\ksm\ksm_um.exe"</Command>
     </PostBuildEvent>
     <DriverSign>
       <FileDigestAlgorithm>sha256</FileDigestAlgorithm>
     </DriverSign>
     <ClCompile>
-      <PreprocessorDefinitions>ENABLE_DBGPRINT;ENABLE_FILEPRINT;NESTED_VMX;PMEM_SANDBOX;EPAGE_HOOK;INTROSPECT_ENGINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <PreprocessorDefinitions>ENABLE_DBGPRINT;EPAGE_HOOK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SectionAlignment>
