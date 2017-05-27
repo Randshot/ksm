@@ -46,18 +46,50 @@
 static int __g_dpc_logical_rval = 0;
 
 #ifndef __linux__
-NTKERNELAPI VOID KeGenericCallDpc(PKDEFERRED_ROUTINE Routine,
-				  PVOID Context);
-NTKERNELAPI VOID KeSignalCallDpcDone(PVOID SystemArgument1);
-NTKERNELAPI LOGICAL KeSignalCallDpcSynchronize(PVOID SystemArgument2);
+//NTKERNELAPI VOID KeGenericCallDpc(PKDEFERRED_ROUTINE Routine,
+//				  PVOID Context);
+//NTKERNELAPI VOID KeSignalCallDpcDone(PVOID SystemArgument1);
+//NTKERNELAPI LOGICAL KeSignalCallDpcSynchronize(PVOID SystemArgument2);
+NTKERNELAPI
+_IRQL_requires_max_(APC_LEVEL)
+_IRQL_requires_min_(PASSIVE_LEVEL)
+_IRQL_requires_same_
+VOID
+KeGenericCallDpc(
+	_In_ PKDEFERRED_ROUTINE Routine,
+	_In_opt_ PVOID Context
+);
+
+NTKERNELAPI
+_IRQL_requires_(DISPATCH_LEVEL)
+_IRQL_requires_same_
+VOID
+KeSignalCallDpcDone(
+	_In_ PVOID SystemArgument1
+);
+
+NTKERNELAPI
+_IRQL_requires_(DISPATCH_LEVEL)
+_IRQL_requires_same_
+LOGICAL
+KeSignalCallDpcSynchronize(
+	_In_ PVOID SystemArgument2
+);
 
 #define DEFINE_DPC(name, call, ...)	\
-	VOID __percpu_##name(PRKDPC dpc, void *ctx, void *sys0, void *sys1)	\
+	VOID __percpu_##name(PRKDPC dpc, void *ctx, void *sys1, void *sys2)	\
 	{									\
 		UNREFERENCED_PARAMETER(dpc);					\
 		__g_dpc_logical_rval |= (call) (__VA_ARGS__);			\
-		KeSignalCallDpcSynchronize(sys1);				\
-		KeSignalCallDpcDone(sys0);					\
+		if (DPC_RET() != 0)\
+					KSM_PANIC(DPC_RET(), 0, 0, 0xFDFD1);\
+		KeSignalCallDpcSynchronize(sys2);				\
+		if (DPC_RET() != 0)\
+					KSM_PANIC(DPC_RET(), 0, 0, 0xFDFD2);\
+		KeSignalCallDpcDone(sys1);					\
+		if (DPC_RET() != 0)\
+					KSM_PANIC(DPC_RET(), 0, 0, 0xFDFD3);\
+		return;\
 	}
 
 #define CALL_DPC(name, ...) do {						\

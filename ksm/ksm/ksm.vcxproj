@@ -71,7 +71,7 @@ copy /y "$(OutDir)ksm_um.exe" "C:\ksm\ksm_um.exe"</Command>
     </DriverSign>
     <ClCompile>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <PreprocessorDefinitions>ENABLE_DBGPRINT;EPAGE_HOOK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SectionAlignment>

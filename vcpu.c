@@ -842,8 +842,11 @@ void vcpu_run(struct vcpu *vcpu, uintptr_t gsp, uintptr_t gip)
 
 		/* If all good, this goes to do_resume (initial guest entry) label in assembly.  */
 		err = __vmx_vmlaunch();
-		KSM_PANIC(err, 0, 0, 0xCC);
+		if (err != 0)
+			KSM_PANIC(err, 0, 0, 0xCCCCC1);
 	}
+
+	KSM_PANIC(err, 0, 0, 0xCCCCC2);
 
 	/*
 	 * vmwrite/vmlaunch failed if we got here,  In the vmlaunch fail case,
@@ -854,6 +857,7 @@ void vcpu_run(struct vcpu *vcpu, uintptr_t gsp, uintptr_t gip)
 	__lidt(&vcpu->g_idt);
 
 off:
+	KSM_PANIC(err, 0, 0, 0xCCCCC3);
 	verr = vmcs_read32(VM_INSTRUCTION_ERROR);
 	__vmx_off();
 	KSM_DEBUG("%d: something went wrong: %d\n", err, verr);
