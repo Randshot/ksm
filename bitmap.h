@@ -74,7 +74,7 @@ static inline unsigned long __ffs(unsigned long x)
 #ifdef _MSC_VER
 	unsigned long i;
 	_BitScanForward(&i, x);
-	return i;
+	return i + 1;
 #else
 	return __builtin_ffs(x);
 #endif
@@ -85,7 +85,7 @@ static inline unsigned long __ffz(unsigned long x)
 #ifdef _MSC_VER
 	unsigned long i;
 	_BitScanForward(&i, ~x);
-	return i;
+	return i + 1;
 #else
 	return __builtin_ffs(~x);
 #endif
