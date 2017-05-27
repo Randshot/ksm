@@ -35,7 +35,7 @@
 
 #define BITMAP_BITS			(sizeof(unsigned long) * CHAR_BIT)
 #define BIT_MASK(nr) 			(1UL << ((nr - 1) % BITMAP_BITS))
-#define BIT_WORD(nr) 			((nr) / BITMAP_BITS)
+#define BIT_WORD(nr) 			(((nr) - 1) / BITMAP_BITS)
 #define DECLARE_BITMAP(name, bits)	\
 	unsigned long name[DIV_ROUND_UP(bits, BITMAP_BITS)]
 
